@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import '@/assets/styles/globals.css';
+import Navbar from '@/components/Navbar';
 
 interface IRootLayoutProps {
     children: React.ReactNode;
@@ -14,7 +15,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: IRootLayoutProps) {
     return (
         <html lang="ru">
-            <body>{children}</body>
+            <body>
+                <Navbar />
+                <main>{children}</main>
+            </body>
         </html>
     );
 }
