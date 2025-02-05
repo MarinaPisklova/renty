@@ -1,14 +1,17 @@
 'use client';
+import { Session } from 'next-auth';
+import { BuiltInProviderType } from 'next-auth/providers/index';
+import { LiteralUnion, ClientSafeProvider, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaGoogle } from 'react-icons/fa';
 
 interface IMobileMenuProps {
-    isLoggedIn: boolean;
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
+    providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
+    session: Session | null;
 }
 
-export default function MobileMenu({ isLoggedIn, setIsLoggedIn }: IMobileMenuProps) {
+export default function MobileMenu({ session, providers }: IMobileMenuProps) {
     const pathname = usePathname();
 
     return (
@@ -30,7 +33,7 @@ export default function MobileMenu({ isLoggedIn, setIsLoggedIn }: IMobileMenuPro
                 >
                     Недвижимость
                 </Link>
-                {isLoggedIn && (
+                {session && (
                     <Link
                         href="/properties/add"
                         className={`${
@@ -40,15 +43,18 @@ export default function MobileMenu({ isLoggedIn, setIsLoggedIn }: IMobileMenuPro
                         Добавить недвижимость
                     </Link>
                 )}
-                {!isLoggedIn && (
-                    <button
-                        onClick={() => setIsLoggedIn(true)}
-                        className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-5"
-                    >
-                        <FaGoogle className="text-white mr-2" />
-                        <span>Войти или зарегистрироваться</span>
-                    </button>
-                )}
+                {!session &&
+                    providers &&
+                    Object.values(providers).map((provider, index) => (
+                        <button
+                            key={index}
+                            onClick={() => signIn(provider.id)}
+                            className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-5"
+                        >
+                            <FaGoogle className="text-white mr-2" />
+                            <span>Войти или зарегистрироваться</span>
+                        </button>
+                    ))}
             </div>
         </div>
     );

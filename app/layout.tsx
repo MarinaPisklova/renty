@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import '@/assets/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AuthProvider from '@/components/AuthProvider';
 
 interface IRootLayoutProps {
     children: React.ReactNode;
@@ -15,12 +16,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: IRootLayoutProps) {
     return (
-        <html lang="ru">
-            <body>
-                <Navbar />
-                <main>{children}</main>
-                <Footer />
-            </body>
-        </html>
+        <AuthProvider>
+            <html lang="ru">
+                <body>
+                    <Navbar />
+                    <main>{children}</main>
+                    <Footer />
+                </body>
+            </html>
+        </AuthProvider>
     );
 }

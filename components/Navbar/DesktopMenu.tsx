@@ -1,14 +1,15 @@
 'use client';
 import logo from '@/assets/images/logo-white.png';
+import { Session } from 'next-auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 interface IDesktopMenuProps {
-    isLoggedIn: boolean;
+    session: Session | null;
 }
 
-export default function DesktopMenu({ isLoggedIn }: IDesktopMenuProps) {
+export default function DesktopMenu({ session }: IDesktopMenuProps) {
     const pathname = usePathname();
 
     return (
@@ -36,7 +37,7 @@ export default function DesktopMenu({ isLoggedIn }: IDesktopMenuProps) {
                     >
                         Недвижимость
                     </Link>
-                    {isLoggedIn && (
+                    {session && (
                         <Link
                             href="/properties/add"
                             className={`${

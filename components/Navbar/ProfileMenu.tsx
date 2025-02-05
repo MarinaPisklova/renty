@@ -3,13 +3,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import profileDefault from '@/assets/images/profile.png';
+import { signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
 
-interface IProfileMenuProps {
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-}
-
-export default function ProfileMenu({ setIsLoggedIn }: IProfileMenuProps) {
+export default function ProfileMenu({ session }: { session: Session | null }) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const profileImage = session?.user?.image;
 
     return (
         <div className="relative ml-3">
@@ -22,7 +21,13 @@ export default function ProfileMenu({ setIsLoggedIn }: IProfileMenuProps) {
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
             >
                 <span className="absolute -inset-1.5"></span>
-                <Image className="h-8 w-8 rounded-full" src={profileDefault} alt="" />
+                <Image
+                    className="h-8 w-8 rounded-full"
+                    src={profileImage || profileDefault}
+                    alt=""
+                    width={40}
+                    height={40}
+                />
             </button>
 
             {isProfileMenuOpen && (
@@ -65,7 +70,7 @@ export default function ProfileMenu({ setIsLoggedIn }: IProfileMenuProps) {
                         id="user-menu-item-2"
                         onClick={() => {
                             setIsProfileMenuOpen(false);
-                            setIsLoggedIn(false);
+                            signOut();
                         }}
                     >
                         Выйти

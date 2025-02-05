@@ -8,7 +8,9 @@ export async function fetchProperties(): Promise<Property[] | undefined> {
             return [];
         }
 
-        const res = await fetch(`${apiDomain}/properties`);
+        const res = await fetch(`${apiDomain}/properties`, {
+            cache: 'no-store',
+        });
         if (!res.ok) {
             throw new Error('Failed to fetch properties');
         }
@@ -16,5 +18,24 @@ export async function fetchProperties(): Promise<Property[] | undefined> {
     } catch (error) {
         console.log(error);
         return [];
+    }
+}
+
+export async function fetchProperty(id: string): Promise<Property | null> {
+    try {
+        if (!apiDomain) {
+            return null;
+        }
+
+        const res = await fetch(`${apiDomain}/properties/${id}`);
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        return res.json();
+    } catch (error) {
+        console.log(error);
+        return null;
     }
 }
