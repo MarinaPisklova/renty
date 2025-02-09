@@ -1,15 +1,17 @@
 'use client';
 
-import { fetchProperty } from '@/utils/requests';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Property } from '../types';
-import PropertyHeaderImage from '@/components/ProperyHeaderImage';
-import Spinner from '@/components/Spinner';
-import { FaArrowLeft } from 'react-icons/fa';
-import Link from 'next/link';
+import BookmarkButton from '@/components/BookmarkButton';
 import PropertyDetails from '@/components/PropertyDetails';
 import PropertyImages from '@/components/PropertyImages';
+import PropertyHeaderImage from '@/components/ProperyHeaderImage';
+import ShareButtons from '@/components/ShareButtons';
+import Spinner from '@/components/Spinner';
+import { fetchProperty } from '@/utils/requests';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
+import { Property } from '../types';
 
 export default function PropertyPage() {
     const { id } = useParams<{ id: string }>();
@@ -60,6 +62,10 @@ export default function PropertyPage() {
                         <div className="container m-auto py-10 px-6">
                             <div className="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
                                 <PropertyDetails property={property} />
+                                <aside className="space-y-4">
+                                    <BookmarkButton propertyId={property._id} />
+                                    <ShareButtons property={property} />
+                                </aside>
                             </div>
                         </div>
                     </section>

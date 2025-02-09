@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pbe/react-yandex-maps": "^1.2.5",
     "cloudinary": "^2.5.1",
     "mongodb": "^6.13.0",
     "mongoose": "^8.9.6",
@@ -17,13 +18,16 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
-    "react-spinners": "^0.15.0"
+    "react-share": "^5.2.0",
+    "react-spinners": "^0.15.0",
+    "react-toastify": "^11.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@yandex/ymaps3-types": "^1.0.15731128",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",

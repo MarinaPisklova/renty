@@ -1,9 +1,15 @@
 'use client';
 
 import { PropertyFields } from '@/app/properties/types';
-import { useState, useEffect } from 'react';
+import { fetchProperty } from '@/utils/requests';
+import { useParams, useRouter } from 'next/navigation';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
-export default function PropertyAddForm() {
+export default function PropertyEditForm() {
+    const { id } = useParams<{ id: string }>();
+    const router = useRouter();
+
     const [mounted, setMounted] = useState(false);
     const [fields, setFields] = useState<PropertyFields>({
         type: '',
@@ -29,12 +35,41 @@ export default function PropertyAddForm() {
             email: '',
             phone: '',
         },
-        images: [],
     });
+
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+
+        // Fetch property data for form
+        const fetchPropertyData = async () => {
+            if (!id) return;
+            try {
+                const propertyData = await fetchProperty(id);
+                if (!propertyData) return;
+
+                if (propertyData && propertyData.rates) {
+                    const defaultRates = { ...propertyData.rates };
+                    for (const rate in defaultRates) {
+                        const ind = rate as keyof typeof defaultRates;
+                        if (defaultRates[ind] === null) {
+                            defaultRates[ind] = 0;
+                        }
+                    }
+                    propertyData.rates = defaultRates;
+                }
+
+                setFields(propertyData);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPropertyData();
+    }, [id]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -84,27 +119,37 @@ export default function PropertyAddForm() {
         }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { files } = e.target;
+    const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-        if (!files || !fields.images) return;
+        try {
+            const formData = new FormData(e.currentTarget);
 
-        const updatedImages = [...fields.images] as File[];
+            const res = await fetch(`/api/properties/${id}`, {
+                method: 'PUT',
+                body: formData,
+            });
 
-        for (const file of files) {
-            updatedImages.push(file);
+            if (res.status === 200) {
+                router.push(`/properties/${id}`);
+            } else if (res.status === 401 || res.status === 403) {
+                toast.error('Доступ запрещен');
+            } else {
+                toast.error('Что-то пошло не так');
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error('Что-то пошло не так');
         }
-
-        setFields((prevFields) => ({
-            ...prevFields,
-            images: updatedImages,
-        }));
     };
 
     return (
-        mounted && (
-            <form action="/api/properties" method="POST" encType="multipart/form-data">
-                <h2 className="text-3xl text-center font-semibold mb-6">Добавить недвижимость</h2>
+        mounted &&
+        !loading && (
+            <form onSubmit={handleSubmit}>
+                <h2 className="text-3xl text-center font-semibold mb-6">
+                    Редактировать объявление
+                </h2>
 
                 <div className="mb-4">
                     <label htmlFor="type" className="block text-gray-700 font-bold mb-2">
@@ -531,28 +576,12 @@ export default function PropertyAddForm() {
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="images" className="block text-gray-700 font-bold mb-2">
-                        Изображения (Добавьте 4 изображения)
-                    </label>
-                    <input
-                        type="file"
-                        id="images"
-                        name="images"
-                        className="border rounded w-full py-2 px-3"
-                        accept="image/*"
-                        multiple
-                        required
-                        onChange={handleImageChange}
-                    />
-                </div>
-
                 <div>
                     <button
                         className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                         type="submit"
                     >
-                        Добавить недвижимость
+                        Сохранить изменения
                     </button>
                 </div>
             </form>
