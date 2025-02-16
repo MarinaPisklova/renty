@@ -13,18 +13,16 @@ export const POST = async (request: Request) => {
         const sessionUser = await getSessionUser();
 
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const { userId } = sessionUser;
         const user = await User.findOne({ _id: userId });
         const isBookmarked = user.bookmarks.includes(propertyId);
 
-        return new Response(JSON.stringify({ isBookmarked }), {
-            status: 200,
-        });
+        return Response.json({ isBookmarked });
     } catch (error) {
         console.log(error);
-        return new Response('Something went wrong', { status: 500 });
+        return Response.json('Something went wrong', { status: 500 });
     }
 };

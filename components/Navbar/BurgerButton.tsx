@@ -2,16 +2,17 @@
 
 interface IBurgerButtonProps {
     onClick: () => void;
+    isOpen: boolean;
 }
 
-export default function BurgerButton({ onClick }: IBurgerButtonProps) {
+export default function BurgerButton({ onClick, isOpen }: IBurgerButtonProps) {
     return (
         <button
             type="button"
             id="mobile-dropdown-button"
             className="relative inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-gray-500  focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             aria-controls="mobile-menu"
-            aria-expanded="false"
+            aria-expanded={isOpen}
             onClick={onClick}
         >
             <span className="absolute -inset-0.5"></span>

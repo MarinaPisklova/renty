@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
-import '@/assets/styles/globals.css';
+import { ToastContainer } from 'react-toastify';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AuthProvider from '@/components/AuthProvider';
-import { ToastContainer } from 'react-toastify';
+import { MessageProvider } from '@/context/MessageContext';
+import '@/assets/styles/globals.css';
 import 'react-toastify/dist/ReactToastify.css';
+import 'photoswipe/dist/photoswipe.css';
 
 interface IRootLayoutProps {
     children: React.ReactNode;
@@ -19,14 +21,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: IRootLayoutProps) {
     return (
         <AuthProvider>
-            <html lang="ru">
-                <body>
-                    <Navbar />
-                    <main>{children}</main>
-                    <Footer />
-                    <ToastContainer />
-                </body>
-            </html>
+            <MessageProvider>
+                <html lang="ru">
+                    <body>
+                        <Navbar />
+                        <main>{children}</main>
+                        <Footer />
+                        <ToastContainer />
+                    </body>
+                </html>
+            </MessageProvider>
         </AuthProvider>
     );
 }

@@ -6,7 +6,11 @@ import profileDefault from '@/assets/images/profile.png';
 import { signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
 
-export default function ProfileMenu({ session }: { session: Session | null }) {
+interface IProfileMenuProps {
+    session: Session | null;
+}
+
+export default function ProfileMenu({ session }: IProfileMenuProps) {
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const profileImage = session?.user?.image;
 
@@ -16,7 +20,7 @@ export default function ProfileMenu({ session }: { session: Session | null }) {
                 type="button"
                 className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 id="user-menu-button"
-                aria-expanded="false"
+                aria-expanded={isProfileMenuOpen}
                 aria-haspopup="true"
                 onClick={() => setIsProfileMenuOpen((prev) => !prev)}
             >

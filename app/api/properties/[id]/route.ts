@@ -1,6 +1,7 @@
 import connectDB from '@/config/database';
 import Property from '@/models/Property';
 import { getSessionUser } from '@/utils/getSessionUser';
+import cloudinary from '@/config/cloudinary';
 
 //GET /api/properties/:id
 export const GET = async (_: Request, { params }: { params: Promise<{ id: string }> }) => {
@@ -11,17 +12,15 @@ export const GET = async (_: Request, { params }: { params: Promise<{ id: string
         const property = await Property.findById(id);
 
         if (!property) {
-            return new Response('Property not found', {
+            return Response.json('Property not found', {
                 status: 404,
             });
         }
 
-        return new Response(JSON.stringify(property), {
-            status: 200,
-        });
+        return Response.json(property);
     } catch (error) {
         console.log(error);
-        return new Response('Failed to fetch property', {
+        return Response.json('Failed to fetch property', {
             status: 500,
         });
     }
@@ -34,7 +33,7 @@ export const DELETE = async (_: Request, { params }: { params: Promise<{ id: str
         const sessionUser = await getSessionUser();
 
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const { userId } = sessionUser;
@@ -43,20 +42,30 @@ export const DELETE = async (_: Request, { params }: { params: Promise<{ id: str
 
         const property = await Property.findById(propertyId);
 
-        if (!property) return new Response('Property Not Found', { status: 404 });
+        if (!property) return Response.json('Property Not Found', { status: 404 });
 
         if (property.owner.toString() !== userId) {
-            return new Response('Unauthorized', { status: 401 });
+            return Response.json('Unauthorized', { status: 401 });
+        }
+
+        // extract public id's from image url in DB
+        const publicIds = property.images.map((imageUrl: string) => {
+            const parts = imageUrl.split('/');
+            return parts.at(-1)?.split('.').at(0);
+        });
+        // Delete images from Cloudinary
+        if (publicIds.length > 0) {
+            for (const publicId of publicIds) {
+                await cloudinary.uploader.destroy('renty/' + publicId);
+            }
         }
 
         await property.deleteOne();
 
-        return new Response('Property Deleted', {
-            status: 200,
-        });
+        return Response.json('Property Deleted');
     } catch (error) {
         console.log(error);
-        return new Response('Something Went Wrong', { status: 500 });
+        return Response.json('Something Went Wrong', { status: 500 });
     }
 };
 
@@ -68,7 +77,7 @@ export const PUT = async (request: Request, { params }: { params: Promise<{ id: 
         const sessionUser = await getSessionUser();
 
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const id = (await params).id;
@@ -79,11 +88,11 @@ export const PUT = async (request: Request, { params }: { params: Promise<{ id: 
         const existingProperty = await Property.findById(id);
 
         if (!existingProperty) {
-            return new Response('Property does not exist', { status: 404 });
+            return Response.json('Property does not exist', { status: 404 });
         }
 
         if (existingProperty.owner.toString() !== userId) {
-            return new Response('Unauthorized', { status: 401 });
+            return Response.json('Unauthorized', { status: 401 });
         }
 
         const propertyData = {
@@ -115,11 +124,9 @@ export const PUT = async (request: Request, { params }: { params: Promise<{ id: 
 
         const updatedProperty = await Property.findByIdAndUpdate(id, propertyData);
 
-        return new Response(JSON.stringify(updatedProperty), {
-            status: 200,
-        });
+        return Response.json(updatedProperty);
     } catch (error) {
         console.log(error);
-        return new Response('Failed to add property', { status: 500 });
+        return Response.json('Failed to add property', { status: 500 });
     }
 };

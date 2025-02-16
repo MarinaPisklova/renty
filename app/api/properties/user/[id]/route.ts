@@ -9,16 +9,14 @@ export const GET = async (_: Request, { params }: { params: Promise<{ id: string
         const userId = (await params).id;
 
         if (!userId) {
-            return new Response('User ID is required', { status: 400 });
+            return Response.json('User ID is required', { status: 400 });
         }
 
         const properties = await Property.find({ owner: userId });
 
-        return new Response(JSON.stringify(properties), {
-            status: 200,
-        });
+        return Response.json(properties);
     } catch (error) {
         console.log(error);
-        return new Response('Something Went Wrong', { status: 500 });
+        return Response.json('Something Went Wrong', { status: 500 });
     }
 };

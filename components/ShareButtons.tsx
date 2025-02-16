@@ -1,3 +1,5 @@
+'use client';
+
 import { Property } from '@/app/properties/types';
 import {
     TelegramIcon,

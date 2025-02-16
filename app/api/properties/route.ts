@@ -4,18 +4,30 @@ import Property from '@/models/Property';
 import { getSessionUser } from '@/utils/getSessionUser';
 
 //GET /api/properties
-export const GET = async () => {
+export const GET = async (request: Request) => {
     try {
         await connectDB();
 
-        const properties = await Property.find({});
+        const { searchParams } = new URL(request.url);
+        const page = Number(searchParams.get('page')) || 1;
+        const pageSize = Number(searchParams.get('pageSize')) || 6;
 
-        return new Response(JSON.stringify(properties), {
+        const skip = (page - 1) * pageSize;
+
+        const total = await Property.countDocuments({});
+        const properties = await Property.find({}).skip(skip).limit(pageSize);
+
+        const result = {
+            total,
+            properties,
+        };
+
+        return new Response(JSON.stringify(result), {
             status: 200,
         });
     } catch (error) {
         console.log(error);
-        return new Response('Failed to fetch properties', {
+        return Response.json('Failed to fetch properties', {
             status: 500,
         });
     }
@@ -29,7 +41,7 @@ export const POST = async (request: Request) => {
         const sessionUser = await getSessionUser();
 
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const { userId } = sessionUser;
@@ -66,10 +78,10 @@ export const POST = async (request: Request) => {
             images: [] as string[],
         };
 
-        const imageUploadPromises = [];
+        const imageUrls = [];
 
-        for (const image of images) {
-            const imageBuffer = await image.arrayBuffer();
+        for (const imageFile of images) {
+            const imageBuffer = await imageFile.arrayBuffer();
             const imageArray = Array.from(new Uint8Array(imageBuffer));
             const imageData = Buffer.from(imageArray);
 
@@ -82,11 +94,10 @@ export const POST = async (request: Request) => {
                 },
             );
 
-            imageUploadPromises.push(result.secure_url);
-
-            const uploadedImages = await Promise.all(imageUploadPromises);
-            propertyData.images = uploadedImages;
+            imageUrls.push(result.secure_url);
         }
+
+        propertyData.images = imageUrls;
 
         const newProperty = new Property(propertyData);
         await newProperty.save();
@@ -94,6 +105,6 @@ export const POST = async (request: Request) => {
         return Response.redirect(`${process.env.NEXTAUTH_URL}/properties/${newProperty._id}`);
     } catch (error) {
         console.log(error);
-        return new Response('Failed to add property', { status: 500 });
+        return Response.json('Failed to add property', { status: 500 });
     }
 };

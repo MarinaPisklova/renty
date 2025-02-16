@@ -12,17 +12,17 @@ export const GET = async () => {
 
         const sessionUser = await getSessionUser();
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const { userId } = sessionUser;
         const user = await User.findOne({ _id: userId });
         const bookmarks = await Property.find({ _id: { $in: user.bookmarks } });
 
-        return new Response(JSON.stringify(bookmarks), { status: 200 });
+        return Response.json(bookmarks);
     } catch (error) {
         console.log(error);
-        return new Response('Something went wrong', { status: 500 });
+        return Response.json('Something went wrong', { status: 500 });
     }
 };
 
@@ -36,7 +36,7 @@ export const POST = async (request: Request) => {
         const sessionUser = await getSessionUser();
 
         if (!sessionUser || !sessionUser.userId) {
-            return new Response('User ID is required', { status: 401 });
+            return Response.json('User ID is required', { status: 401 });
         }
 
         const { userId } = sessionUser;
@@ -56,11 +56,9 @@ export const POST = async (request: Request) => {
 
         await user.save();
 
-        return new Response(JSON.stringify({ message, isBookmarked }), {
-            status: 200,
-        });
+        return Response.json({ message, isBookmarked });
     } catch (error) {
         console.log(error);
-        return new Response('Something went wrong', { status: 500 });
+        return Response.json('Something went wrong', { status: 500 });
     }
 };

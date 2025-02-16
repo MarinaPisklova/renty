@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import BurgerButton from './BurgerButton';
 import DesktopMenu from './DesktopMenu';
@@ -19,7 +20,15 @@ export default function Navbar() {
             setProviders(res);
         };
 
+        const resizeHandler = () => {
+            setIsMobileMenuOpen(false);
+        };
+
+        window.addEventListener('resize', resizeHandler);
+
         setAuthProviders();
+
+        return () => window.removeEventListener('resize', resizeHandler);
     }, []);
 
     return (
@@ -27,7 +36,10 @@ export default function Navbar() {
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-20 items-center justify-between">
                     <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
-                        <BurgerButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+                        <BurgerButton
+                            isOpen={isMobileMenuOpen}
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        />
                     </div>
 
                     <DesktopMenu session={session} />

@@ -12,6 +12,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Property } from '../types';
+import PropertyContactForm from '@/components/PropertyContactForm';
 
 export default function PropertyPage() {
     const { id } = useParams<{ id: string }>();
@@ -65,6 +66,7 @@ export default function PropertyPage() {
                                 <aside className="space-y-4">
                                     <BookmarkButton propertyId={property._id} />
                                     <ShareButtons property={property} />
+                                    <PropertyContactForm property={property} />
                                 </aside>
                             </div>
                         </div>

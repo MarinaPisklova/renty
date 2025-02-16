@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 interface IInfoBoxProps {
     title: string;
     backgroundColor?: string;
@@ -21,14 +23,14 @@ export default function InfoBox({
         <div className={`${backgroundColor} p-6 rounded-lg shadow-md`}>
             <h2 className={`${textColor} text-2xl font-bold`}>{title}</h2>
             <p className={`${textColor} mt-2 mb-4`}>{children}</p>
-            <a
+            <Link
                 href={buttonInfo.link}
                 className={`inline-block ${
                     buttonInfo.backgroundColor ?? 'bg-black'
                 } text-white rounded-lg px-4 py-2 hover:opacity-80`}
             >
                 {buttonInfo.text}
-            </a>
+            </Link>
         </div>
     );
 }
