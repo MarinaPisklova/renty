@@ -4,43 +4,6 @@ import { getSessionUser } from '@/utils/getSessionUser';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/messages
-export const GET = async () => {
-    try {
-        await connectDB();
-
-        const sessionUser = await getSessionUser();
-
-        if (!sessionUser || !sessionUser.user) {
-            return Response.json('User ID is required', {
-                status: 401,
-            });
-        }
-
-        const { userId } = sessionUser;
-
-        const readMessages = await Message.find({ recipient: userId, read: true })
-            .sort({ createdAt: -1 })
-            .populate('sender', 'username')
-            .populate('property', 'name');
-
-        const unreadMessages = await Message.find({
-            recipient: userId,
-            read: false,
-        })
-            .sort({ createdAt: -1 })
-            .populate('sender', 'username')
-            .populate('property', 'name');
-
-        const messages = [...unreadMessages, ...readMessages];
-
-        return Response.json(messages);
-    } catch (error) {
-        console.log(error);
-        return Response.json('Something went wrong', { status: 500 });
-    }
-};
-
 // POST /api/messages
 export const POST = async (request: Request) => {
     try {

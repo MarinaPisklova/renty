@@ -1,7 +1,22 @@
 import Properties from '@/components/Properties';
 import PropertySearchForm from '@/components/PropertySearchForm';
+import Property from '@/models/Property';
+import connectDB from '@/config/database';
 
-export default async function PropertiesPage() {
+export default async function PropertiesPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ pageSize: number; page: number }>;
+}) {
+    const { pageSize = 6, page = 1 } = await searchParams;
+
+    await connectDB();
+
+    const skip = (page - 1) * pageSize;
+
+    const total = await Property.countDocuments({});
+    const properties = await Property.find({}).skip(skip).limit(pageSize);
+
     return (
         <>
             <section className="bg-emerald-700 py-4">
@@ -9,7 +24,7 @@ export default async function PropertiesPage() {
                     <PropertySearchForm />
                 </div>
             </section>
-            <Properties />
+            <Properties properties={properties} total={total} page={page} pageSize={pageSize} />
         </>
     );
 }

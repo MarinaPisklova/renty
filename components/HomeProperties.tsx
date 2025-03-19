@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import PropertyCard from './PropertyCard';
-import { fetchProperties } from '@/utils/requests';
+import connectDB from '@/config/database';
+import Property from '@/models/Property';
+import { Property as PropertyType } from '@/app/properties/types';
 
 export default async function HomeProperties() {
-    const data = await fetchProperties();
+    await connectDB();
 
-    const recentProperties = data?.properties
-        ?.sort(() => Math.random() - Math.random())
-        .slice(0, 3);
+    const recentProperties = await Property.find({})
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .lean<PropertyType[]>();
 
     return (
         <>
