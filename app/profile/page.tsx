@@ -1,76 +1,26 @@
-'use client';
-
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
+import { Property as PropertyType } from '@/app/properties/types';
 import profileDefault from '@/assets/images/profile.png';
-import { useEffect, useState } from 'react';
-import Spinner from '@/components/Spinner';
-import Link from 'next/link';
-import { Property } from '../properties/types';
-import { RentySession } from '@/utils/authOptions';
-import { toast } from 'react-toastify';
+import ProfileProperties from '@/components/ProfileProperties';
+import connectDB from '@/config/database';
+import Property from '@/models/Property';
+import { convertToSerializableObject } from '@/utils/convertToObject';
+import { getSessionUser } from '@/utils/getSessionUser';
+import Image from 'next/image';
 
-export default function ProfilePage() {
-    const { data: session } = useSession();
-    const profileImage = session?.user?.image;
-    const profileName = session?.user?.name;
-    const profileEmail = session?.user?.email;
+export const dynamic = 'force-dynamic';
 
-    const [properties, setProperties] = useState<Property[]>([]);
-    const [loading, setLoading] = useState(true);
+export default async function ProfilePage() {
+    await connectDB();
 
-    useEffect(() => {
-        const fetchUserProperties = async (userId: string) => {
-            if (!userId) {
-                return;
-            }
+    const sessionUser = await getSessionUser();
+    const userId = sessionUser?.userId;
 
-            try {
-                const res = await fetch(`/api/properties/user/${userId}`);
+    if (!userId) {
+        throw new Error('User ID is required');
+    }
 
-                if (res.status === 200) {
-                    const data = await res.json();
-                    setProperties(data);
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const userId = (session as RentySession)?.user?.id;
-        if (userId) {
-            fetchUserProperties(userId);
-        }
-    }, [session]);
-
-    const handleDeleteProperty = async (propertyId: string) => {
-        const confirmed = window.confirm('Вы уверены, что хотите удалить объявление?');
-
-        if (!confirmed) return;
-
-        try {
-            const res = await fetch(`/api/properties/${propertyId}`, {
-                method: 'DELETE',
-            });
-
-            if (res.status === 200) {
-                const updatedProperties = properties.filter(
-                    (property) => property._id !== propertyId,
-                );
-
-                setProperties(updatedProperties);
-
-                toast.success('Объявление удалено');
-            } else {
-                toast.error('Не удалось удалить объявление');
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error('Не удалось удалить объявление');
-        }
-    };
+    const propertiesDocs = await Property.find({ owner: userId }).lean<PropertyType[]>();
+    const properties = propertiesDocs.map(convertToSerializableObject);
 
     return (
         <section>
@@ -82,62 +32,28 @@ export default function ProfilePage() {
                             <div className="mb-4">
                                 <Image
                                     className="h-32 w-32 md:h-48 md:w-48 rounded-full mx-auto md:mx-0"
-                                    src={profileImage || profileDefault}
+                                    src={sessionUser.user.image || profileDefault}
                                     width={200}
                                     height={200}
                                     alt="User"
                                 />
                             </div>
                             <h2 className="text-2xl mb-4">
-                                <span className="font-bold block">Имя: </span> {profileName}
+                                <span className="font-bold block">Имя: </span>{' '}
+                                {sessionUser.user.name}
                             </h2>
                             <h2 className="text-2xl">
-                                <span className="font-bold block">Email: </span> {profileEmail}
+                                <span className="font-bold block">Email: </span>{' '}
+                                {sessionUser.user.email}
                             </h2>
                         </div>
 
                         <div className="md:w-3/4 md:pl-4">
                             <h2 className="text-xl font-semibold mb-4">Мои объявления</h2>
-                            {!loading && properties.length === 0 && <p>У вас нет объявлений</p>}
-                            {loading ? (
-                                <Spinner loading={loading} />
+                            {properties.length === 0 ? (
+                                <p>У вас нет объявлений</p>
                             ) : (
-                                properties.map((property) => (
-                                    <div key={property._id} className="mb-10">
-                                        <Link href={`/properties/${property._id}`}>
-                                            <Image
-                                                className="h-32 w-full rounded-md object-cover"
-                                                src={property.images[0]}
-                                                alt=""
-                                                width={500}
-                                                height={100}
-                                                priority={true}
-                                            />
-                                        </Link>
-                                        <div className="mt-2">
-                                            <p className="text-lg font-semibold">{property.name}</p>
-                                            <p className="text-gray-600">
-                                                Адрес: {property.location.street}{' '}
-                                                {property.location.city} {property.location.state}
-                                            </p>
-                                        </div>
-                                        <div className="mt-2">
-                                            <Link
-                                                href={`/properties/${property._id}/edit`}
-                                                className="bg-emerald-500 text-white px-3 py-3 rounded-md mr-2 hover:bg-emerald-600"
-                                            >
-                                                Редактировать
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDeleteProperty(property._id)}
-                                                className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600"
-                                                type="button"
-                                            >
-                                                Удалить
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
+                                <ProfileProperties properties={properties} />
                             )}
                         </div>
                     </div>

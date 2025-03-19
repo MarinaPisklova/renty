@@ -1,5 +1,7 @@
 'use client';
 
+import deleteMessage from '@/app/actions/deleteMessage';
+import markMessageAsRead from '@/app/actions/markMessageAsRead';
 import { Message } from '@/app/messages/types';
 import { useMessageContext } from '@/context/MessageContext';
 import { useState } from 'react';
@@ -15,42 +17,21 @@ export default function MessageCard({ message }: IMessageProps) {
     const { setUnreadCount } = useMessageContext();
 
     const handleReadClick = async () => {
-        try {
-            const res = await fetch(`/api/messages/${message._id}`, {
-                method: 'PUT',
-            });
-
-            if (res.status === 200) {
-                const { read } = await res.json();
-                setIsRead(read);
-                setUnreadCount((prevCount) => (read ? prevCount - 1 : prevCount + 1));
-                if (read) {
-                    toast.success('Сообщение отмечено как прочитанное');
-                } else {
-                    toast.success('Сообщение отмечено как непрочитанное');
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error('Что-то пошло не так');
+        const read = await markMessageAsRead(message._id);
+        setIsRead(read);
+        setUnreadCount((prevCount) => (read ? prevCount - 1 : prevCount + 1));
+        if (read) {
+            toast.success('Сообщение отмечено как прочитанное');
+        } else {
+            toast.success('Сообщение отмечено как непрочитанное');
         }
     };
 
     const handleDeleteClick = async () => {
-        try {
-            const res = await fetch(`/api/messages/${message._id}`, {
-                method: 'DELETE',
-            });
-
-            if (res.status === 200) {
-                setIsDeleted(true);
-                setUnreadCount((prevCount) => (isRead ? prevCount : prevCount - 1));
-                toast.success('Сообщение удалено');
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error('Сообщение не было удалено');
-        }
+        await deleteMessage(message._id);
+        setIsDeleted(true);
+        setUnreadCount((prevCount) => (isRead ? prevCount : prevCount - 1));
+        toast.success('Сообщение удалено');
     };
 
     if (isDeleted) {
