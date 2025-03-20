@@ -1,31 +1,9 @@
 'use client';
 
 import { useMessageContext } from '@/context/MessageContext';
-import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
 
 export default function UnreadMessageCount() {
-    const { data: session } = useSession();
-    const { unreadCount, setUnreadCount } = useMessageContext();
-
-    useEffect(() => {
-        if (!session) return;
-
-        const fetchUnreadMessages = async () => {
-            try {
-                const res = await fetch('/api/messages/unread-count');
-
-                if (res.status === 200) {
-                    const data = await res.json();
-                    setUnreadCount(data);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        fetchUnreadMessages();
-    }, [session, setUnreadCount]);
+    const { unreadCount } = useMessageContext();
 
     return (
         unreadCount > 0 && (

@@ -9,16 +9,16 @@ async function markMessageAsRead(messageId: string) {
     await connectDB();
     const sessionUser = await getSessionUser();
     if (!sessionUser || !sessionUser.user) {
-        throw new Error('User ID is required');
+        throw new Error('Вы должны войти');
     }
     const { userId } = sessionUser;
 
     const message = await Message.findById(messageId);
 
-    if (!message) throw new Error('Message not found');
+    if (!message) throw new Error('Сообщение не найдено');
 
     if (message.recipient.toString() !== userId) {
-        throw new Error('Unauthorized');
+        throw new Error('Вы должны войти');
     }
 
     message.read = !message.read;

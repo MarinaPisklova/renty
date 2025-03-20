@@ -11,14 +11,14 @@ async function updateProperty(propertyId: string, formData: FormData) {
 
     const sessionUser = await getSessionUser();
     if (!sessionUser || !sessionUser.userId) {
-        throw new Error('User ID is required');
+        throw new Error('Вы должны войтиб чтобы внести изменения');
     }
     const { userId } = sessionUser;
 
     const existingProperty = await Property.findById(propertyId);
 
     if (existingProperty.owner.toString() !== userId) {
-        throw new Error('Current user does not own this property.');
+        throw new Error('Вы не являетесь автором объявления');
     }
 
     const amenities = formData.getAll('amenities');

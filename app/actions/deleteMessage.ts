@@ -11,17 +11,17 @@ async function deleteMessage(messageId: string) {
     const sessionUser = await getSessionUser();
 
     if (!sessionUser || !sessionUser.user) {
-        throw new Error('User ID is required');
+        throw new Error('Вы должны войти, чтобы удалить сообщение');
     }
 
     const { userId } = sessionUser;
 
     const message = await Message.findById(messageId);
 
-    if (!message) throw new Error('Message Not Found');
+    if (!message) throw new Error('Сообщение не найдено');
 
     if (message.recipient.toString() !== userId) {
-        throw new Error('Unauthorized');
+        throw new Error('Вы должны войти');
     }
 
     revalidatePath('/messages', 'page');

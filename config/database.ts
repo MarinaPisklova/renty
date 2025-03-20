@@ -14,14 +14,11 @@ const connectDB = async () => {
     if (!process.env.MONGO_DB_URL) {
         throw new Error('MONGO_DB_URL is not defined');
     }
-    // Connect to MongoDB
-    try {
-        await mongoose.connect(process.env.MONGO_DB_URL);
-        connected = true;
-        console.log('MongoDB connected...');
-    } catch (error) {
-        console.log(error);
-    }
+
+    await mongoose.connect(process.env.MONGO_DB_URL);
+
+    connected = true;
+    console.log('MongoDB connected...');
 };
 
 export default connectDB;

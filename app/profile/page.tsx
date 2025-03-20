@@ -7,8 +7,6 @@ import { convertToSerializableObject } from '@/utils/convertToObject';
 import { getSessionUser } from '@/utils/getSessionUser';
 import Image from 'next/image';
 
-export const dynamic = 'force-dynamic';
-
 export default async function ProfilePage() {
     await connectDB();
 
@@ -16,7 +14,7 @@ export default async function ProfilePage() {
     const userId = sessionUser?.userId;
 
     if (!userId) {
-        throw new Error('User ID is required');
+        throw new Error('Вы должны войти');
     }
 
     const propertiesDocs = await Property.find({ owner: userId }).lean<PropertyType[]>();

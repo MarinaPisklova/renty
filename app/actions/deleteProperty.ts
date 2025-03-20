@@ -9,7 +9,7 @@ import { revalidatePath } from 'next/cache';
 async function deleteProperty(propertyId: string) {
     const sessionUser = await getSessionUser();
     if (!sessionUser || !sessionUser.userId) {
-        throw new Error('User ID is required');
+        throw new Error('Вы должны войти, чтобы удалить недвижимость');
     }
     const { userId } = sessionUser;
 
@@ -17,10 +17,10 @@ async function deleteProperty(propertyId: string) {
 
     const property = await Property.findById(propertyId);
 
-    if (!property) throw new Error('Property Not Found');
+    if (!property) throw new Error('Недвижимость не найдена');
 
     if (property.owner.toString() !== userId) {
-        throw new Error('Unauthorized');
+        throw new Error('Вы должны войти');
     }
 
     const publicIds = property.images.map((imageUrl: string) => {
