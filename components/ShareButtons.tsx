@@ -17,8 +17,8 @@ interface IShareButtonsProps {
 }
 
 export default function ShareButtons({ property }: IShareButtonsProps) {
-    const PUBLIC_DOMAIN = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
+    const PUBLIC_DOMAIN = process.env.NEXT_PUBLIC_VERCEL_URL
+        ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
         : 'http://localhost:3000';
 
     const shareUrl = `${PUBLIC_DOMAIN}/properties/${property._id}`;
