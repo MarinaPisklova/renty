@@ -13,8 +13,8 @@ interface IRootLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: 'Renty',
-    description: 'Renty — удобное приложение для поиска и аренды недвижимости.',
+    title: 'RentyXi',
+    description: 'RentyXi — удобное приложение для поиска и аренды недвижимости.',
     keywords: 'аренда квартир, аренда недвижимости, жильё, недвижимость',
 };
 

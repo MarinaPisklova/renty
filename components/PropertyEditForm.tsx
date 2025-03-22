@@ -103,6 +103,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                     </label>
                     <input
                         type="number"
+                        min={0}
                         id="beds"
                         name="beds"
                         className="border rounded w-full py-2 px-3"
@@ -116,6 +117,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                     </label>
                     <input
                         type="number"
+                        min={0}
                         id="baths"
                         name="baths"
                         className="border rounded w-full py-2 px-3"
@@ -129,6 +131,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                     </label>
                     <input
                         type="number"
+                        min={0}
                         id="square_meter"
                         name="square_meter"
                         className="border rounded w-full py-2 px-3"
@@ -310,9 +313,9 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                             type="checkbox"
                             id="amenity_coffee_maker"
                             name="amenities"
-                            value="Кофемашинаr"
+                            value="Кофемашина"
                             className="mr-2"
-                            defaultChecked={property.amenities.includes('Кофемашинаr')}
+                            defaultChecked={property.amenities.includes('Кофемашина')}
                         />
                         <label htmlFor="amenity_coffee_maker">Кофемашина</label>
                     </div>
@@ -330,6 +333,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                         </label>
                         <input
                             type="number"
+                            min={0}
                             id="weekly_rate"
                             name="rates.weekly"
                             className="border rounded w-full py-2 px-3"
@@ -342,6 +346,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                         </label>
                         <input
                             type="number"
+                            min={0}
                             id="monthly_rate"
                             name="rates.monthly"
                             className="border rounded w-full py-2 px-3"
@@ -354,6 +359,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                         </label>
                         <input
                             type="number"
+                            min={0}
                             id="nightly_rate"
                             name="rates.nightly"
                             className="border rounded w-full py-2 px-3"
@@ -370,7 +376,7 @@ export default function PropertyEditForm({ property }: IPropertyEditFormProps) {
                 <input
                     type="text"
                     id="seller_name"
-                    name="seller_info.name."
+                    name="seller_info.name"
                     className="border rounded w-full py-2 px-3"
                     placeholder="Имя"
                     defaultValue={property.seller_info.name}

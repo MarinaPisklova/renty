@@ -17,7 +17,7 @@ export default function DesktopMenu({ session }: IDesktopMenuProps) {
             <Link className="flex flex-shrink-0 items-center" href="/">
                 <Image className="h-10 w-auto" src={logo} alt="PropertyPulse" />
 
-                <span className="hidden md:block text-white text-2xl font-bold ml-2">Renty</span>
+                <span className="hidden md:block text-white text-2xl font-bold ml-2">RentyXi</span>
             </Link>
             <div className="hidden md:ml-6 md:block">
                 <div className="flex space-x-2">

@@ -4,13 +4,13 @@ import addMessage from '@/app/actions/addMessage';
 import { Property } from '@/app/properties/types';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormState } from 'react-dom';
 import { FaPaperPlane } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import SubmitButton from './SubmitButton';
 
 export default function PropertyContactForm({ property }: { property: Property }) {
     const { data: session } = useSession();
-    const status = useFormStatus();
     const [submitState, formAction] = useFormState<
         { error?: string; submitted?: boolean },
         FormData
@@ -104,13 +104,11 @@ export default function PropertyContactForm({ property }: { property: Property }
                         ></textarea>
                     </div>
                     <div>
-                        <button
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline flex items-center justify-center"
-                            type="submit"
-                        >
-                            <FaPaperPlane className="mr-2" />{' '}
-                            {status.pending ? 'Отправляем...' : 'Отправить'}
-                        </button>
+                        <SubmitButton
+                            icon={<FaPaperPlane className="mr-2" />}
+                            text="Отправить"
+                            pendingText="Отправляем..."
+                        />
                     </div>
                 </form>
             )}
